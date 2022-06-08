@@ -12,6 +12,10 @@
           ></v-select>
         </v-col>
 
+        <v-col md="12" class="text-center">
+          <ComponentLoading :active="cargando" />
+        </v-col>
+
         <v-col md="12">
           <v-row>
             <v-col xs="12" sm="6" md="4" lg="3" v-for="(item, index) in items" :key="index">
@@ -34,8 +38,9 @@ export default {
   name: 'App',
   data() {
     return {
-      perPage: [5, 10, 25, 50, 100],
+      perPage: [5, 10, 25, 50, 100, 200],
       items: [],
+      cargando: false,
       url: 'https://pokeapi.co/api/v2/pokemon?offset=0&limit=',
     };
   },
@@ -45,9 +50,7 @@ export default {
   },
 
   async mounted() {
-    this.getItems().then(() => {
-      console.log(this.items);
-    });
+    this.getItems();
   },
 
   methods: {
@@ -55,11 +58,26 @@ export default {
       store.dispatch('cantidad', e);
     },
     getItems() {
-      return axios.get(`${this.url}${this.cantidad}`).then((resp) => {
-        this.items = resp.data.results;
-        this.items.map((item) => {
-          item.testing = true;
-          return item;
+      this.cargando = true;
+      this.items.length = 0;
+      axios.get(`${this.url}${this.cantidad}`).then(async (resp) => {
+        // const detalles = [];
+        const promesas = [];
+        for (const item of resp.data.results) {
+          // const {data: pokemon} = await axios.get(item.url);
+          // detalles.push(pokemon);
+
+          const pokemon = axios.get(item.url);
+          promesas.push(pokemon);
+        }
+        // this.items = detalles;
+        // this.cargando = false;
+
+        Promise.all(promesas).then((detalles) => {
+          detalles = detalles.map((detalle) => detalle.data);
+          console.log(detalles);
+          this.items = detalles;
+          this.cargando = false;
         });
       });
     },
@@ -84,7 +102,7 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
+  /* text-align: center; */
   color: #2c3e50;
   margin-top: 60px;
 }
