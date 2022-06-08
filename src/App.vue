@@ -62,26 +62,25 @@ export default {
       this.items.length = 0;
       axios.get(`${this.url}${this.cantidad}`).then(async (resp) => {
         // Opción1
-        const detalles = [];
-        for (const item of resp.data.results) {
-          const {data: pokemon} = await axios.get(item.url);
-          detalles.push(pokemon);
-        }
-        this.items = detalles;
-        this.cargando = false;
+        // const detalles = [];
+        // for (const item of resp.data.results) {
+        //   const {data: pokemon} = await axios.get(item.url);
+        //   detalles.push(pokemon);
+        // }
+        // this.items = detalles;
+        // this.cargando = false;
         // Fin Opción1
 
         // Opción2
-        // const promesas = [];
-        // for (const item of resp.data.results) {
-        //   const pokemon = axios.get(item.url);
-        //   promesas.push(pokemon);
-        // }
-        // Promise.all(promesas).then((detalles) => {
-        //   detalles = detalles.map((detalle) => detalle.data);
-        //   this.items = detalles;
-        //   this.cargando = false;
-        // });
+        const promesas = [];
+        for (const item of resp.data.results) {
+          const pokemon = axios.get(item.url);
+          promesas.push(pokemon);
+        }
+        Promise.all(promesas).then((detalles) => {
+          this.items = detalles.map((detalle) => detalle.data);
+          this.cargando = false;
+        });
         // Fin Opción2
       });
     },
