@@ -45,9 +45,7 @@ export default {
   },
 
   async mounted() {
-    this.getItems().then(() => {
-      console.log(this.items);
-    });
+    this.getItems();
   },
 
   methods: {
@@ -55,12 +53,8 @@ export default {
       store.dispatch('cantidad', e);
     },
     getItems() {
-      return axios.get(`${this.url}${this.cantidad}`).then((resp) => {
+      axios.get(`${this.url}${this.cantidad}`).then((resp) => {
         this.items = resp.data.results;
-        this.items.map((item) => {
-          item.testing = true;
-          return item;
-        });
       });
     },
   },
