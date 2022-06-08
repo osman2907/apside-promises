@@ -75,7 +75,6 @@ export default {
 
         Promise.all(promesas).then((detalles) => {
           detalles = detalles.map((detalle) => detalle.data);
-          console.log(detalles);
           this.items = detalles;
           this.cargando = false;
         });
